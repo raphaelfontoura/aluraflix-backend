@@ -46,4 +46,4 @@ Caso queira rodar no PostgreSQL, altere o application.properties para:
 # Spring run profile
 spring.profiles.active=${APP_PROFILE:dev}
 ```
-Inicialize o PostgreSQL (Pode rodar em docker usando o dockerfile da pasta docker).
+Inicialize o PostgreSQL (Pode rodar em docker usando o docker-compose da pasta docker).
