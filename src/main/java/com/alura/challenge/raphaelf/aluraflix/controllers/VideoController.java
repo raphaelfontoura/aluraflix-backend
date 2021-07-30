@@ -1,8 +1,8 @@
 package com.alura.challenge.raphaelf.aluraflix.controllers;
 
 import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoInputDTO;
+import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoUpdateDTO;
 import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoViewDTO;
-import com.alura.challenge.raphaelf.aluraflix.entities.Video;
 import com.alura.challenge.raphaelf.aluraflix.services.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,9 +33,9 @@ public class VideoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(videoDto));
     }
 
-    @PatchMapping
-    public ResponseEntity<VideoViewDTO> update(@RequestBody @Valid VideoInputDTO videoDto) {
-        return ResponseEntity.ok(service.update(videoDto));
+    @PutMapping
+    public ResponseEntity<VideoViewDTO> update(@RequestBody @Valid VideoUpdateDTO dto) {
+        return ResponseEntity.ok(service.update(dto));
     }
 
     @DeleteMapping(value = "/{id}")

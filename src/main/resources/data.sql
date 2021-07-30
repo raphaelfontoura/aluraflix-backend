@@ -1,0 +1,1 @@
+INSERT INTO category (titulo,cor) VALUES ('LIVRE','#FFF');
