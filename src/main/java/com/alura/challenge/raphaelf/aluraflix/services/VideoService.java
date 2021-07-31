@@ -72,6 +72,13 @@ public class VideoService {
         }
     }
 
+    public List<VideoViewDTO> findByTitulo(String titulo) {
+        return repository.findByTituloContainingIgnoreCase(titulo)
+                .stream()
+                .map(VideoViewDTO::new)
+                .collect(Collectors.toList());
+    }
+
     private boolean hasCategoryId (VideoInputDTO input) {
         return input.getCategoriaId() != null;
     }

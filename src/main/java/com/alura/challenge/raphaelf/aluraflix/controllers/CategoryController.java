@@ -3,6 +3,7 @@ package com.alura.challenge.raphaelf.aluraflix.controllers;
 import com.alura.challenge.raphaelf.aluraflix.DTOs.CategoryInputDTO;
 import com.alura.challenge.raphaelf.aluraflix.DTOs.CategoryUpdateDTO;
 import com.alura.challenge.raphaelf.aluraflix.DTOs.CategoryViewDTO;
+import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoViewDTO;
 import com.alura.challenge.raphaelf.aluraflix.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,5 +45,10 @@ public class CategoryController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/{id}/videos")
+    public ResponseEntity<List<VideoViewDTO>> getVideosByCategory(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getVideosByCategory(id));
     }
 }

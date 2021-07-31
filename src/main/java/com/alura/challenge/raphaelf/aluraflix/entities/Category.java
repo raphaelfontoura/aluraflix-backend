@@ -1,10 +1,14 @@
 package com.alura.challenge.raphaelf.aluraflix.entities;
 
+import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoViewDTO;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@Table(name = "tb_categories")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
@@ -19,5 +23,7 @@ public class Category {
     private String titulo;
     @Column(nullable = false)
     private String cor;
-
+    @OneToMany(mappedBy = "category")
+    @Setter(AccessLevel.NONE)
+    private List<Video> videos = new ArrayList<>();
 }

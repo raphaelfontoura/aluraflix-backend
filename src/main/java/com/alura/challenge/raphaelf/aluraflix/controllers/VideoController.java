@@ -19,9 +19,12 @@ public class VideoController {
     private VideoService service;
 
     @GetMapping
-    public ResponseEntity<List<VideoViewDTO>> findAll() {
+    public ResponseEntity<List<VideoViewDTO>> findAll(String search) {
+        System.out.println("Parametro buscado: " + search);
+        if (search != null) return ResponseEntity.ok(service.findByTitulo(search));
         return ResponseEntity.ok(service.findAll());
     }
+
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<VideoViewDTO> findById(@PathVariable Long id) {

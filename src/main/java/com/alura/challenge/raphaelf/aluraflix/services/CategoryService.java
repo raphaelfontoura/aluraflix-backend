@@ -3,12 +3,16 @@ package com.alura.challenge.raphaelf.aluraflix.services;
 import com.alura.challenge.raphaelf.aluraflix.DTOs.CategoryInputDTO;
 import com.alura.challenge.raphaelf.aluraflix.DTOs.CategoryUpdateDTO;
 import com.alura.challenge.raphaelf.aluraflix.DTOs.CategoryViewDTO;
+import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoViewDTO;
 import com.alura.challenge.raphaelf.aluraflix.entities.Category;
+import com.alura.challenge.raphaelf.aluraflix.entities.Video;
 import com.alura.challenge.raphaelf.aluraflix.repositories.CategoryRepository;
 import com.alura.challenge.raphaelf.aluraflix.services.exceptions.DatabaseException;
 import com.alura.challenge.raphaelf.aluraflix.services.exceptions.ResourceNotFoundException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -37,7 +41,7 @@ public class CategoryService {
 
     @Transactional
     public CategoryViewDTO save(CategoryInputDTO categoryInput) {
-        Category category = new Category(null,categoryInput.getTitulo(), categoryInput.getCor());
+        Category category = new Category(null,categoryInput.getTitulo(), categoryInput.getCor(),null);
         return new CategoryViewDTO(repository.save(category));
     }
 
@@ -55,11 +59,18 @@ public class CategoryService {
     public void delete(Long id) {
         try {
             repository.deleteById(id);
-        } catch (EntityNotFoundException err) {
+        } catch (EmptyResultDataAccessException err) {
             throw new ResourceNotFoundException("Categoria não econtrada.");
         } catch (DataIntegrityViolationException err) {
             throw new DatabaseException("Violação de integridade da base de dados.");
         }
+    }
+
+    public List<VideoViewDTO> getVideosByCategory(Long id) {
+        Category category = repository.getById(id);
+        List<Video> videos = category.getVideos();
+        if (videos.isEmpty()) throw new ResourceNotFoundException("Nao existem videos para categoria informada.");
+        return category.getVideos().stream().map(VideoViewDTO::new).collect(Collectors.toList());
     }
 
     private Category mapper(CategoryUpdateDTO dto) {
