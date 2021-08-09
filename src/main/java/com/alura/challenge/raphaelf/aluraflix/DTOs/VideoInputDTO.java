@@ -13,7 +13,6 @@ import javax.validation.constraints.Size;
 @Getter @Setter
 public class VideoInputDTO {
 
-    private Long id;
     @Size(min = 10, message = "Tamanho mínimo de 10 caracteres")
     @NotBlank(message = "Campo requerido")
     private String titulo;

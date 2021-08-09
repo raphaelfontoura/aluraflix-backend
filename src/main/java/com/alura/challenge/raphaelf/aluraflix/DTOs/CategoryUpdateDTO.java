@@ -1,5 +1,6 @@
 package com.alura.challenge.raphaelf.aluraflix.DTOs;
 
+import com.alura.challenge.raphaelf.aluraflix.entities.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,4 +17,5 @@ public class CategoryUpdateDTO {
     private String titulo;
     @Pattern(regexp = "^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$")
     private String cor;
+
 }

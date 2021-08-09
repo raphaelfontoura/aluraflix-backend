@@ -9,7 +9,6 @@ import com.alura.challenge.raphaelf.aluraflix.entities.Video;
 import com.alura.challenge.raphaelf.aluraflix.repositories.CategoryRepository;
 import com.alura.challenge.raphaelf.aluraflix.services.exceptions.DatabaseException;
 import com.alura.challenge.raphaelf.aluraflix.services.exceptions.ResourceNotFoundException;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -41,7 +40,7 @@ public class CategoryService {
 
     @Transactional
     public CategoryViewDTO save(CategoryInputDTO categoryInput) {
-        Category category = new Category(null,categoryInput.getTitulo(), categoryInput.getCor(),null);
+        Category category = new Category(categoryInput.getTitulo(), categoryInput.getCor());
         return new CategoryViewDTO(repository.save(category));
     }
 

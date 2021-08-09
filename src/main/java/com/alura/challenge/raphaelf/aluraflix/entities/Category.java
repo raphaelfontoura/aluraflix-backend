@@ -26,4 +26,8 @@ public class Category {
     @OneToMany(mappedBy = "category")
     @Setter(AccessLevel.NONE)
     private List<Video> videos = new ArrayList<>();
+
+    public Category(String titulo, String cor) {
+    }
+
 }

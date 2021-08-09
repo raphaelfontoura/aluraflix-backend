@@ -1,6 +1,8 @@
 package com.alura.challenge.raphaelf.aluraflix.services;
 
-import com.alura.challenge.raphaelf.aluraflix.DTOs.*;
+import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoInputDTO;
+import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoUpdateDTO;
+import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoViewDTO;
 import com.alura.challenge.raphaelf.aluraflix.entities.Category;
 import com.alura.challenge.raphaelf.aluraflix.entities.Video;
 import com.alura.challenge.raphaelf.aluraflix.repositories.CategoryRepository;
@@ -15,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -32,8 +34,10 @@ public class VideoController {
     }
 
     @PostMapping
-    public ResponseEntity<VideoViewDTO> save(@RequestBody @Valid VideoInputDTO videoDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.save(videoDto));
+    public ResponseEntity<VideoViewDTO> save(@RequestBody @Valid VideoInputDTO videoDto, UriComponentsBuilder uriBuilder) {
+        var videoViewDto = service.save(videoDto);
+        URI uri = uriBuilder.path("/videos/{id}").buildAndExpand(videoViewDto.getId()).toUri();
+        return ResponseEntity.created(uri).body(videoViewDto);
     }
 
     @PutMapping
