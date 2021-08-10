@@ -1,8 +1,8 @@
 package com.alura.challenge.raphaelf.aluraflix.controllers;
 
 import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoInputDTO;
+import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoUpdateDTO;
 import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoViewDTO;
-import com.alura.challenge.raphaelf.aluraflix.controllers.exceptions.StandardError;
 import com.alura.challenge.raphaelf.aluraflix.services.VideoService;
 import com.alura.challenge.raphaelf.aluraflix.services.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.AfterEach;
@@ -13,12 +13,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import javax.management.BadAttributeValueExpException;
 import javax.validation.ValidationException;
-import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,9 +24,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,9 +39,11 @@ class VideoControllerTest {
     private VideoService service;
     @Autowired
     private MockMvc mockMvc;
+    private VideoViewDTO videoViewDTO;
 
     @BeforeEach
     void setUp() {
+        videoViewDTO = new VideoViewDTO(1L,"Nome do video","descricao do video","http://url.com",1L);
 
     }
 
@@ -56,7 +54,7 @@ class VideoControllerTest {
     @Test
     void givenVideos_whenGetVideos_thenReturnJsonArray() throws Exception {
         List<VideoViewDTO> videosView = Arrays.asList(
-                new VideoViewDTO(1L,"Nome do video","descricao do video","url",1L),
+                videoViewDTO,
                 new VideoViewDTO(2L,"Nome do video 2","descricao do video 2","url2",1L)
         );
         when(service.findAll()).thenReturn(videosView);
@@ -65,7 +63,7 @@ class VideoControllerTest {
         mockMvc.perform(get("/videos").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].titulo", is(videosView.get(0).getTitulo())));
+                .andExpect(jsonPath("$[0].titulo", is(videoViewDTO.getTitulo())));
 
     }
 
@@ -80,17 +78,15 @@ class VideoControllerTest {
 
     @Test
     void givenVideoId_whenGetFindVideoById_thenReturnVideo() throws Exception {
-        VideoViewDTO videoDto = new VideoViewDTO(1L, "Video teste", "descricao", "url", 1L);
-        when(service.findById(1L)).thenReturn(videoDto);
+        when(service.findById(1L)).thenReturn(videoViewDTO);
 
         mockMvc.perform(get("/videos/1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("titulo", is(videoDto.getTitulo())));
+                .andExpect(jsonPath("titulo", is(videoViewDTO.getTitulo())));
     }
 
     @Test
     void givenVideoNotExists_whenGetFindVideoById_thenReturnNotFound() throws Exception {
-        VideoViewDTO videoDto = new VideoViewDTO(1L, "Video teste", "descricao", "url", 1L);
         when(service.findById(99L)).thenThrow(ResourceNotFoundException.class);
 
         mockMvc.perform(get("/videos/99").contentType(MediaType.APPLICATION_JSON))
@@ -99,7 +95,7 @@ class VideoControllerTest {
 
     @Test
     void givenValidVideosInput_whenSaveNewVideo_thenReturnCreated() throws Exception {
-        when(service.save(any())).thenReturn(new VideoViewDTO(1L, "video teste", "descricao", "http://url.com", 1L));
+        when(service.save(any(VideoInputDTO.class))).thenReturn(videoViewDTO);
 
         String input = "{ \"titulo\": \"Video novo\", " +
                 " \"descricao\":\"descricao video\", " +
@@ -111,7 +107,7 @@ class VideoControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("id").exists())
-                .andExpect(jsonPath("titulo").value("video teste"));
+                .andExpect(jsonPath("titulo").value(videoViewDTO.getTitulo()));
     }
 
     @Test
@@ -130,14 +126,56 @@ class VideoControllerTest {
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
                 .andExpect(jsonPath("error").exists())
+                .andExpect(jsonPath("error").value("Validation exception"))
+                .andExpect(jsonPath("$.errors[*]['fieldName']").value("url"));
+    }
+
+    @Test
+    void givenVideoUpdate_whenUpdateDatas_thenReturnOkAndVideoViewDto() throws Exception {
+        when(service.update(any(VideoUpdateDTO.class))).thenReturn(videoViewDTO);
+        String input = "{\"id\":1, \"titulo\": \"Video novo\", " +
+                " \"descricao\":\"altera descricao video\", " +
+                " \"url\":\"http://url.com.br\"}";
+
+        mockMvc.perform(put("/videos")
+                        .content(input)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").exists());
+    }
+
+    @Test
+    void givenVideoUpdate_whenUpdateVideoWithoutId_thenReturnException() throws Exception {
+        when(service.update(any(VideoUpdateDTO.class))).thenReturn(videoViewDTO);
+        String input = "{\"titulo\": \"Video novo\", " +
+                " \"descricao\":\"altera descricao video\", " +
+                " \"url\":\"http://url.com.br\"}";
+
+        mockMvc.perform(put("/videos")
+                        .content(input)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
+                .andExpect(jsonPath("error").exists())
                 .andExpect(jsonPath("error").value("Validation exception"));
     }
 
     @Test
-    void update() {
+    void givenVideoDeleteById_thenReturnNoContent() throws Exception {
+        doNothing().when(service).delete(1L);
+
+        mockMvc.perform(delete("/videos/1"))
+                .andExpect(status().isNoContent());
     }
 
     @Test
-    void deleteById() {
+    void givenVideoDeleteByIdInvalid_thenReturnException() throws Exception {
+        doThrow(ResourceNotFoundException.class).when(service).delete(99L);
+
+        mockMvc.perform(delete("/videos/99"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("error").value("Resource not found"));
     }
 }
