@@ -13,6 +13,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -28,10 +30,10 @@ public class VideoService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public List<VideoViewDTO> findAll() {
-        var videos = repository.findAll();
+    public Page<VideoViewDTO> findAll(PageRequest pageRequest) {
+        var videos = repository.findAll(pageRequest);
         if (videos.isEmpty()) throw new ResourceNotFoundException("Não existem registros na base de dados.");
-        return videos.stream().map(VideoViewDTO::new).collect(Collectors.toList());
+        return videos.map(VideoViewDTO::new);
     }
 
     public VideoViewDTO findById(Long id) {
@@ -73,11 +75,9 @@ public class VideoService {
         }
     }
 
-    public List<VideoViewDTO> findByTitulo(String titulo) {
-        return repository.findByTituloContainingIgnoreCase(titulo)
-                .stream()
-                .map(VideoViewDTO::new)
-                .collect(Collectors.toList());
+    public Page<VideoViewDTO> findByTitulo(String titulo, PageRequest pageRequest) {
+        return repository.findByTituloContainingIgnoreCase(titulo, pageRequest)
+                .map(VideoViewDTO::new);
     }
 
     private boolean hasCategoryId (VideoInputDTO input) {

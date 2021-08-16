@@ -5,6 +5,9 @@ import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoUpdateDTO;
 import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoViewDTO;
 import com.alura.challenge.raphaelf.aluraflix.services.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,10 +24,10 @@ public class VideoController {
     private VideoService service;
 
     @GetMapping
-    public ResponseEntity<List<VideoViewDTO>> findAll(String search) {
-        System.out.println("Parametro buscado: " + search);
-        if (search != null) return ResponseEntity.ok(service.findByTitulo(search));
-        return ResponseEntity.ok(service.findAll());
+    public ResponseEntity<Page<VideoViewDTO>> findAll(@RequestParam(value = "page", defaultValue = "0") Integer page, String search) {
+        PageRequest pageRequest = PageRequest.of(page, 5);
+        if (search != null) return ResponseEntity.ok(service.findByTitulo(search, pageRequest));
+        return ResponseEntity.ok(service.findAll(pageRequest));
     }
 
 

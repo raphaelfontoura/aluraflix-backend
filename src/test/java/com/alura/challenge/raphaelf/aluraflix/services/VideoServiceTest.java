@@ -11,12 +11,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -28,11 +33,13 @@ class VideoServiceTest {
     private Category category;
     @MockBean
     private VideoRepository repository;
+    private PageRequest pageRequest;
 
     @BeforeEach
     void setUp() {
         category = new Category(1L, "LIVRE","#FFF", null);
         video = new Video(1L,"Teste","teste descricao","http://teste.com",category);
+        pageRequest = PageRequest.of(0,5);
     }
 
     @AfterEach
@@ -41,25 +48,25 @@ class VideoServiceTest {
 
     @Test
     void giveFindByTitulo_whenVideoWithTituloExistsIgnoreCase_thenReturnVideo() {
-
-        when(repository.findByTituloContainingIgnoreCase(anyString()))
-                .thenReturn(new ArrayList<>(List.of(
-                        video,
-                        new Video(2L, "Teste 2", "teste descricao 2", "http://teste.com/2", category)
-                )));
-        List<VideoViewDTO> byTitulo = service.findByTitulo("teste");
+        List<Video> videos = new ArrayList<>(List.of(
+                video,
+                new Video(2L, "Teste 2", "teste descricao 2", "http://teste.com/2", category)
+        ));
+        when(repository.findByTituloContainingIgnoreCase(anyString(), any()))
+                .thenReturn(new PageImpl<Video>(videos));
+        Page<VideoViewDTO> byTitulo = service.findByTitulo("teste", pageRequest);
 
         assertFalse(byTitulo.isEmpty());
-        assertEquals(2, byTitulo.size());
+        assertEquals(2, byTitulo.getTotalElements());
 
-        assertEquals("Teste", byTitulo.get(0).getTitulo());
+        assertEquals("Teste", byTitulo.get().collect(Collectors.toList()).get(0).getTitulo());
     }
 
     @Test
     void giveFindByTitulo_whenVideoWithTituloNotExists_thenReturnNotFoundException() {
 
-        when(repository.findByTituloContainingIgnoreCase(anyString())).thenThrow(ResourceNotFoundException.class);
+        when(repository.findByTituloContainingIgnoreCase(anyString(), any())).thenThrow(ResourceNotFoundException.class);
 
-        assertThrows(ResourceNotFoundException.class, () -> service.findByTitulo("teste"));
+        assertThrows(ResourceNotFoundException.class, () -> service.findByTitulo("teste", pageRequest));
     }
 }

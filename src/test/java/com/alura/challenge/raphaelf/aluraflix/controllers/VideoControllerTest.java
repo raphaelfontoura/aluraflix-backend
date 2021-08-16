@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -57,19 +59,19 @@ class VideoControllerTest {
                 videoViewDTO,
                 new VideoViewDTO(2L,"Nome do video 2","descricao do video 2","url2",1L)
         );
-        when(service.findAll()).thenReturn(videosView);
+        when(service.findAll(any())).thenReturn(new PageImpl<VideoViewDTO>(videosView));
 
         assertThat(controller).isNotNull();
         mockMvc.perform(get("/videos").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].titulo", is(videoViewDTO.getTitulo())));
+                .andExpect(jsonPath("content", hasSize(2)))
+                .andExpect(jsonPath("content[0].titulo", is(videoViewDTO.getTitulo())));
 
     }
 
     @Test
     void givenVideosIsEmpty_whenGetVideos_thenReturnNotFound() throws Exception {
-        when(service.findAll()).thenThrow(ResourceNotFoundException.class);
+        when(service.findAll(PageRequest.of(0,5))).thenThrow(ResourceNotFoundException.class);
 
         mockMvc.perform(get("/videos").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
