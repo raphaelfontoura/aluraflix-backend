@@ -60,7 +60,7 @@ class VideoControllerTest {
         when(service.findAll()).thenReturn(videosView);
 
         assertThat(controller).isNotNull();
-        mockMvc.perform(get("/videos").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/videos").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].titulo", is(videoViewDTO.getTitulo())));
@@ -71,7 +71,7 @@ class VideoControllerTest {
     void givenVideosIsEmpty_whenGetVideos_thenReturnNotFound() throws Exception {
         when(service.findAll()).thenThrow(ResourceNotFoundException.class);
 
-        mockMvc.perform(get("/videos").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/videos").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
     }
@@ -80,7 +80,7 @@ class VideoControllerTest {
     void givenVideoId_whenGetFindVideoById_thenReturnVideo() throws Exception {
         when(service.findById(1L)).thenReturn(videoViewDTO);
 
-        mockMvc.perform(get("/videos/1").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/videos/1").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("titulo", is(videoViewDTO.getTitulo())));
     }
@@ -89,7 +89,7 @@ class VideoControllerTest {
     void givenVideoNotExists_whenGetFindVideoById_thenReturnNotFound() throws Exception {
         when(service.findById(99L)).thenThrow(ResourceNotFoundException.class);
 
-        mockMvc.perform(get("/videos/99").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/videos/99").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
@@ -141,7 +141,7 @@ class VideoControllerTest {
                         .content(input)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isAccepted())
                 .andExpect(jsonPath("id").exists());
     }
 

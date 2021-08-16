@@ -3,10 +3,9 @@ package com.alura.challenge.raphaelf.aluraflix.DTOs;
 import com.alura.challenge.raphaelf.aluraflix.entities.Video;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 @AllArgsConstructor
-@Getter @Setter
+@Getter
 public class VideoViewDTO {
     private Long id;
     private String titulo;

@@ -42,7 +42,7 @@ public class VideoController {
 
     @PutMapping
     public ResponseEntity<VideoViewDTO> update(@RequestBody @Valid VideoUpdateDTO dto) {
-        return ResponseEntity.ok(service.update(dto));
+        return ResponseEntity.accepted().body(service.update(dto));
     }
 
     @DeleteMapping(value = "/{id}")

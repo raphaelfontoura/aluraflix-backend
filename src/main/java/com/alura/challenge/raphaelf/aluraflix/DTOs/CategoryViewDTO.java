@@ -1,15 +1,13 @@
 package com.alura.challenge.raphaelf.aluraflix.DTOs;
 
 import com.alura.challenge.raphaelf.aluraflix.entities.Category;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 @AllArgsConstructor
-@Setter @Getter
+@Getter
 public class CategoryViewDTO {
-    @Setter(AccessLevel.NONE)
+
     private Long id;
     private String titulo;
     private String cor;
