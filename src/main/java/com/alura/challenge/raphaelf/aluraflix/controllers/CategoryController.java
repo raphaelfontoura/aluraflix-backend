@@ -6,6 +6,8 @@ import com.alura.challenge.raphaelf.aluraflix.DTOs.CategoryViewDTO;
 import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoViewDTO;
 import com.alura.challenge.raphaelf.aluraflix.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +24,9 @@ public class CategoryController {
     private CategoryService service;
 
     @GetMapping
-    public ResponseEntity<List<CategoryViewDTO>> findAll() {
-        return ResponseEntity.ok(service.findAll());
+    public ResponseEntity<Page<CategoryViewDTO>> findAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+        PageRequest pageRequest = PageRequest.of(page,5);
+        return ResponseEntity.ok(service.findAll(pageRequest));
     }
 
     @GetMapping("/{id}")
@@ -51,7 +54,8 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}/videos")
-    public ResponseEntity<List<VideoViewDTO>> getVideosByCategory(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getVideosByCategory(id));
+    public ResponseEntity<Page<VideoViewDTO>> getVideosByCategory(@PathVariable Long id) {
+        PageRequest pageRequest = PageRequest.of(0,5);
+        return ResponseEntity.ok(service.getVideosByCategory(id, pageRequest));
     }
 }

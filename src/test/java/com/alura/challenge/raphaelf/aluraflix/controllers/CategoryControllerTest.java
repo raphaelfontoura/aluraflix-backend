@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -55,18 +56,18 @@ class CategoryControllerTest {
                 categoryViewDTO,
                 new CategoryViewDTO(2L, "OUTROS", "#AAA")
         );
-        when(service.findAll()).thenReturn(categories);
+        when(service.findAll(any())).thenReturn(new PageImpl<>(categories));
 
         mockMvc.perform(get("/categorias").accept(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].titulo", is(categoryViewDTO.getTitulo())));
+                .andExpect(jsonPath("content", hasSize(2)))
+                .andExpect(jsonPath("content[0].titulo", is(categoryViewDTO.getTitulo())));
 
     }
 
     @Test
     void givenGetCategories_whenEmptyResult_thenReturnException() throws Exception {
         List<CategoryViewDTO> categories = new ArrayList<>();
-        when(service.findAll()).thenThrow(ResourceNotFoundException.class);
+        when(service.findAll(any())).thenThrow(ResourceNotFoundException.class);
 
         mockMvc.perform(get("/categorias").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -132,12 +133,12 @@ class CategoryControllerTest {
                 new VideoViewDTO(1L, "teste", "descricao", "http://url.com", 1L),
                 new VideoViewDTO(1L, "teste", "descricao", "http://url.com", 2L)
                 );
-        when(service.getVideosByCategory(1L))
-                .thenReturn(videos.stream().filter(v -> v.getCategoriaId() == 1L).collect(Collectors.toList()));
+        when(service.getVideosByCategory(any(), any()))
+                .thenReturn(new PageImpl<>(videos.stream().filter(v -> v.getCategoriaId() == 1L).collect(Collectors.toList())));
 
         mockMvc.perform(get("/categorias/1/videos")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("content", hasSize(2)));
     }
 }

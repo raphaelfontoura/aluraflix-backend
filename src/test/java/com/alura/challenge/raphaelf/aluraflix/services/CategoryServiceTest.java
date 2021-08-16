@@ -12,6 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.querydsl.QPageRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +30,11 @@ class CategoryServiceTest {
     private CategoryService service;
     @MockBean
     private CategoryRepository repository;
+    private PageRequest pageRequest;
 
     @BeforeEach
     void setUp() {
+        pageRequest = PageRequest.of(0,5);
     }
 
     @AfterEach
@@ -39,12 +44,12 @@ class CategoryServiceTest {
     @Test
     void givenGetVideosByCategory_whenVideosExists_thenReturnListOfVideos() {
         Category category = new Category("LIVRE","#FFF");
-        List<Video>  videos = category.getVideos();
+        List<Video> videos = category.getVideos();
         videos.add(new Video(1L, "Titulo", "Descricao", "http://url.com", category));
         when(repository.getById(any())).thenReturn(category);
-        List<VideoViewDTO> videosByCategory = service.getVideosByCategory(1L);
+        Page<VideoViewDTO> videosByCategory = service.getVideosByCategory(1L, pageRequest);
 
-        assertEquals(1, videosByCategory.size());
+        assertEquals(1, videosByCategory.getTotalElements());
         assertEquals("Titulo", videos.get(0).getTitulo());
     }
 
@@ -53,6 +58,6 @@ class CategoryServiceTest {
 
         when(repository.getById(any())).thenThrow(ResourceNotFoundException.class);
 
-        assertThrows(ResourceNotFoundException.class, () -> service.getVideosByCategory(99L));
+        assertThrows(ResourceNotFoundException.class, () -> service.getVideosByCategory(99L, pageRequest));
     }
 }

@@ -12,6 +12,9 @@ import com.alura.challenge.raphaelf.aluraflix.services.exceptions.ResourceNotFou
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -25,11 +28,11 @@ public class CategoryService {
     private CategoryRepository repository;
 
 
-    public List<CategoryViewDTO> findAll() {
-        var categories = repository.findAll();
+    public Page<CategoryViewDTO> findAll(PageRequest pageRequest) {
+        var categories = repository.findAll(pageRequest);
         if (categories.isEmpty()) throw new ResourceNotFoundException("Não existem registros na base de dados.");
 
-        return categories.stream().map(CategoryViewDTO::new).collect(Collectors.toList());
+        return categories.map(CategoryViewDTO::new);
     }
 
     public CategoryViewDTO findById(Long id) {
@@ -65,11 +68,12 @@ public class CategoryService {
         }
     }
 
-    public List<VideoViewDTO> getVideosByCategory(Long id) {
+    public Page<VideoViewDTO> getVideosByCategory(Long id, PageRequest pageRequest) {
         Category category = repository.getById(id);
         List<Video> videos = category.getVideos();
         if (videos.isEmpty()) throw new ResourceNotFoundException("Nao existem videos para categoria informada.");
-        return category.getVideos().stream().map(VideoViewDTO::new).collect(Collectors.toList());
+        List<VideoViewDTO> videosDto = videos.stream().map(VideoViewDTO::new).collect(Collectors.toList());
+        return new PageImpl<>(videosDto);
     }
 
     private Category mapper(CategoryUpdateDTO dto) {
