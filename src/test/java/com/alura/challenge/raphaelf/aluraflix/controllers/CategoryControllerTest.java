@@ -58,7 +58,7 @@ class CategoryControllerTest {
         );
         when(service.findAll(any())).thenReturn(new PageImpl<>(categories));
 
-        mockMvc.perform(get("/categorias").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/categorias/").accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("content", hasSize(2)))
                 .andExpect(jsonPath("content[0].titulo", is(categoryViewDTO.getTitulo())));
 

@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter @Setter
 @EqualsAndHashCode(of = "id")
+@ToString(exclude = "videos")
 public class Category {
 
     @Id
@@ -28,6 +29,8 @@ public class Category {
     private List<Video> videos = new ArrayList<>();
 
     public Category(String titulo, String cor) {
+        this.titulo = titulo;
+        this.cor = cor;
     }
 
 }

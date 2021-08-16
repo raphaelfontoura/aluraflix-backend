@@ -4,14 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 @AllArgsConstructor
 @Getter @Setter
 public class CategoryInputDTO {
-    private Long id;
     @NotBlank(message = "O campo é obrigatório")
     private String titulo;
     @NotBlank(message = "O campo é obrigatório")
