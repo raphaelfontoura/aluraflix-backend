@@ -1,19 +1,18 @@
 package com.alura.challenge.raphaelf.aluraflix.entities;
 
-import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoViewDTO;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tb_categories")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
-@EqualsAndHashCode(of = "id")
-@ToString(exclude = "videos")
+@ToString
 public class Category {
 
     @Id
@@ -26,6 +25,7 @@ public class Category {
     private String cor;
     @OneToMany(mappedBy = "category")
     @Setter(AccessLevel.NONE)
+    @ToString.Exclude
     private List<Video> videos = new ArrayList<>();
 
     public Category(String titulo, String cor) {
@@ -33,4 +33,16 @@ public class Category {
         this.cor = cor;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Category category = (Category) o;
+        return id.equals(category.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
