@@ -1,10 +1,10 @@
 # Challenge ALURA Backend - AluraFlix API 
 > Um pequeno projeto para treinar conceitos de backend utilizando o Java com Spring Boot. #alurachallengeback
+> Projeto desenvolvido durante a **[Alura Challenges](https://www.alura.com.br/challenges/back-end)**
 
 
 
-
-### História
+### :rocket: História
 Após alguns testes com protótipos feitos pelo time de UX de uma empresa, foi requisitada a primeira versão de uma plataforma para compartilhamento de vídeos. A plataforma deve permitir ao usuário montar playlists com links para seus vídeos preferidos, separados por categorias.
 
 Os times de frontend e UI já estão trabalhando no layout e nas telas. Para o backend, as principais funcionalidades a serem implementadas são:
@@ -18,7 +18,7 @@ Temos um período de tempo de 4 semanas para desenvolver o projeto. Nas 3 primei
 
 <cite>
 
-Vamos trabalhar com o sistema ágil de desenvolvimento, utilizando o Trello da seguinte forma:
+:computer: Vamos trabalhar com o sistema ágil de desenvolvimento, utilizando o Trello da seguinte forma:
 (Link: https://trello.com/b/Mj5x6lMZ/alura-challenge-backend-semana-1)
 
 1. A coluna Pronto pra iniciar apresenta os cartões com os elementos ainda não desenvolvidos.
@@ -32,7 +32,7 @@ Bom projeto!
 
 </cite>
 
-### Rodando o projeto
+### :coffee: Rodando o projeto
 Execute, na raiz do projeto, o comando:
 ```
 $ ./mvnw clean install
