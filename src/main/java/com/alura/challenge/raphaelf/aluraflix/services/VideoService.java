@@ -43,15 +43,19 @@ public class VideoService {
 
     @Transactional
     public VideoViewDTO save(VideoInputDTO videoDto) {
-        var video = Video.builder()
-                .titulo(videoDto.getTitulo())
-                .descricao(videoDto.getDescricao())
-                .url(videoDto.getUrl())
-                .category(categoryRepository.getById(
-                        hasCategoryId(videoDto) ? videoDto.getCategoriaId() : 1L)
-                )
-                .build();
-        return new VideoViewDTO(repository.save(video));
+        try {
+            var video = Video.builder()
+                    .titulo(videoDto.getTitulo())
+                    .descricao(videoDto.getDescricao())
+                    .url(videoDto.getUrl())
+                    .category(categoryRepository.getById(
+                            hasCategoryId(videoDto) ? videoDto.getCategoriaId() : 1L)
+                    )
+                    .build();
+            return new VideoViewDTO(repository.save(video));
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseException("Violação de integridade da base de dados.");
+        }
     }
 
     @Transactional

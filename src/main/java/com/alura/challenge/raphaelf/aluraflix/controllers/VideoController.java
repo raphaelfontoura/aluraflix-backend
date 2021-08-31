@@ -30,6 +30,12 @@ public class VideoController {
         return ResponseEntity.ok(service.findAll(pageRequest));
     }
 
+    @GetMapping(value = "/free")
+    public ResponseEntity<Page<VideoViewDTO>> findAllFree(Integer page, String search) {
+        PageRequest pageRequest = PageRequest.of(0, 3);
+        if (search != null) return ResponseEntity.ok(service.findByTitulo(search, pageRequest));
+        return ResponseEntity.ok(service.findAll(pageRequest));
+    }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<VideoViewDTO> findById(@PathVariable Long id) {
