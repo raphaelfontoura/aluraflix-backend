@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ class CategoryControllerTest {
     void tearDown() {
     }
 
+    @WithMockUser(value = "alurauser")
     @Test
     void givenGetCategories_whenGetAll_thenReturnListCategoryView() throws Exception {
         List<CategoryViewDTO> categories = Arrays.asList(
@@ -65,6 +67,20 @@ class CategoryControllerTest {
     }
 
     @Test
+    void givenGetCategories_whenUnauthenticated_thenReturnUnauthorized401() throws Exception {
+        List<CategoryViewDTO> categories = Arrays.asList(
+                categoryViewDTO,
+                new CategoryViewDTO(2L, "OUTROS", "#AAA")
+        );
+        when(service.findAll(any())).thenReturn(new PageImpl<>(categories));
+
+        mockMvc.perform(get("/categorias/").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @WithMockUser(value = "alurauser")
+    @Test
     void givenGetCategories_whenEmptyResult_thenReturnException() throws Exception {
         List<CategoryViewDTO> categories = new ArrayList<>();
         when(service.findAll(any())).thenThrow(ResourceNotFoundException.class);
@@ -75,6 +91,7 @@ class CategoryControllerTest {
 
     }
 
+    @WithMockUser(value = "alurauser")
     @Test
     void givenGetCategory_whenCategoryIdInformed_thenReturnCategoryView() throws Exception {
         when(service.findById(1L)).thenReturn(categoryViewDTO);
@@ -84,6 +101,7 @@ class CategoryControllerTest {
                 .andExpect(jsonPath("titulo").value(categoryViewDTO.getTitulo()));
     }
 
+    @WithMockUser(value = "alurauser")
     @Test
     void givePostCategory_whenCategoryDataIsValid_thenCreateNewCategory() throws Exception {
         when(service.save(any(CategoryInputDTO.class))).thenReturn(categoryViewDTO);
@@ -100,6 +118,7 @@ class CategoryControllerTest {
                 .andExpect(jsonPath("id").exists());
     }
 
+    @WithMockUser(value = "alurauser")
     @Test
     void givePutCategory_whenCategoryUpdateDtoIsValid_thenUpdateCategoryInformed() throws Exception {
         when(service.update(any(CategoryUpdateDTO.class))).thenReturn(categoryViewDTO);
@@ -118,6 +137,7 @@ class CategoryControllerTest {
 
     }
 
+    @WithMockUser(value = "alurauser")
     @Test
     void giveDeleteCategory_whenCategoryIdExists_thenRemoveCategory() throws Exception {
         doNothing().when(service).delete(1L);
@@ -126,6 +146,7 @@ class CategoryControllerTest {
                 .andExpect(status().isNoContent());
     }
 
+    @WithMockUser(value = "alurauser")
     @Test
     void giveGetVideosByCategory_whenCategoryIdAndVideosExists_thenReturnVideosList() throws Exception {
         List<VideoViewDTO> videos = Arrays.asList(

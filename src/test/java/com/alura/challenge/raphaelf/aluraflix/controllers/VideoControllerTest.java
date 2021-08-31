@@ -14,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
@@ -53,6 +54,7 @@ class VideoControllerTest {
     void tearDown() {
     }
 
+    @WithMockUser(value = "alurauser")
     @Test
     void givenVideos_whenGetVideos_thenReturnJsonArray() throws Exception {
         List<VideoViewDTO> videosView = Arrays.asList(
@@ -70,6 +72,38 @@ class VideoControllerTest {
     }
 
     @Test
+    void givenVideos_whenGetVideosFreeUnauthenticated_thenReturnOnePageJsonArrayWithSize3() throws Exception {
+        List<VideoViewDTO> videosView = Arrays.asList(
+                videoViewDTO,
+                new VideoViewDTO(2L,"Nome do video 2","descricao do video 2","url2",1L)
+        );
+        when(service.findAll(any())).thenReturn(new PageImpl<VideoViewDTO>(videosView));
+
+        assertThat(controller).isNotNull();
+        mockMvc.perform(get("/videos/free").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("content", hasSize(2)))
+                .andExpect(jsonPath("content[0].titulo", is(videoViewDTO.getTitulo())))
+                .andExpect(jsonPath("size", is(2)));
+
+    }
+
+    @Test
+    void givenVideos_whenGetVideosUnauthenticated_thenReturnUnauthorized401() throws Exception {
+        List<VideoViewDTO> videosView = Arrays.asList(
+                videoViewDTO,
+                new VideoViewDTO(2L,"Nome do video 2","descricao do video 2","url2",1L)
+        );
+        when(service.findAll(any())).thenReturn(new PageImpl<VideoViewDTO>(videosView));
+
+        assertThat(controller).isNotNull();
+        mockMvc.perform(get("/videos").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @WithMockUser(value = "alurauser")
+    @Test
     void givenVideosIsEmpty_whenGetVideos_thenReturnNotFound() throws Exception {
         when(service.findAll(PageRequest.of(0,5))).thenThrow(ResourceNotFoundException.class);
 
@@ -78,6 +112,7 @@ class VideoControllerTest {
 
     }
 
+    @WithMockUser(value = "alurauser")
     @Test
     void givenVideoId_whenGetFindVideoById_thenReturnVideo() throws Exception {
         when(service.findById(1L)).thenReturn(videoViewDTO);
@@ -87,6 +122,7 @@ class VideoControllerTest {
                 .andExpect(jsonPath("titulo", is(videoViewDTO.getTitulo())));
     }
 
+    @WithMockUser(value = "alurauser")
     @Test
     void givenVideoNotExists_whenGetFindVideoById_thenReturnNotFound() throws Exception {
         when(service.findById(99L)).thenThrow(ResourceNotFoundException.class);
@@ -95,6 +131,7 @@ class VideoControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @WithMockUser(value = "alurauser")
     @Test
     void givenValidVideosInput_whenSaveNewVideo_thenReturnCreated() throws Exception {
         when(service.save(any(VideoInputDTO.class))).thenReturn(videoViewDTO);
@@ -112,6 +149,7 @@ class VideoControllerTest {
                 .andExpect(jsonPath("titulo").value(videoViewDTO.getTitulo()));
     }
 
+    @WithMockUser(value = "alurauser")
     @Test
     void givenInvalidVideo_whenSaveNewVideo_thenReturnValidationException() throws Exception {
         when(service.save(any(VideoInputDTO.class)))
@@ -132,6 +170,7 @@ class VideoControllerTest {
                 .andExpect(jsonPath("$.errors[*]['fieldName']").value("url"));
     }
 
+    @WithMockUser(value = "alurauser")
     @Test
     void givenVideoUpdate_whenUpdateDatas_thenReturnOkAndVideoViewDto() throws Exception {
         when(service.update(any(VideoUpdateDTO.class))).thenReturn(videoViewDTO);
@@ -147,6 +186,7 @@ class VideoControllerTest {
                 .andExpect(jsonPath("id").exists());
     }
 
+    @WithMockUser(value = "alurauser")
     @Test
     void givenVideoUpdate_whenUpdateVideoWithoutId_thenReturnException() throws Exception {
         when(service.update(any(VideoUpdateDTO.class))).thenReturn(videoViewDTO);
@@ -164,6 +204,7 @@ class VideoControllerTest {
                 .andExpect(jsonPath("error").value("Validation exception"));
     }
 
+    @WithMockUser(value = "alurauser")
     @Test
     void givenVideoDeleteById_thenReturnNoContent() throws Exception {
         doNothing().when(service).delete(1L);
@@ -172,6 +213,7 @@ class VideoControllerTest {
                 .andExpect(status().isNoContent());
     }
 
+    @WithMockUser(value = "alurauser")
     @Test
     void givenVideoDeleteByIdInvalid_thenReturnException() throws Exception {
         doThrow(ResourceNotFoundException.class).when(service).delete(99L);
