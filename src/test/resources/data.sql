@@ -1,9 +1,4 @@
-INSERT INTO tb_categories (titulo,cor)
-SELECT * FROM (SELECT 'LIVRE', '#FFF') AS tmp
-WHERE NOT EXISTS (
-    SELECT id FROM tb_categories WHERE id = 1
-) LIMIT 1;
------------ SEED FOR TESTS -----------
+INSERT INTO tb_categories (titulo,cor) VALUES ('LIVRE','#FFF');
 INSERT INTO tb_categories (titulo,cor) VALUES ('SERIES','#AAA');
 
 INSERT INTO tb_videos (titulo, descricao, url, category_id)

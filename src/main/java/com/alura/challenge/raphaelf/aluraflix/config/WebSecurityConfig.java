@@ -16,14 +16,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http.csrf().disable()
+                .authorizeRequests()
                 .antMatchers("/videos/free").permitAll()
                 .anyRequest().authenticated()
+                .and().cors()
                 .and()
                 .logout(logout -> logout.logoutUrl("/logout"))
                 .httpBasic();
-        http.csrf().disable();
-        http.cors();
     }
 
     @Bean

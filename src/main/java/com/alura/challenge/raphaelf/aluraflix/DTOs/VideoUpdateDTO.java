@@ -2,6 +2,7 @@ package com.alura.challenge.raphaelf.aluraflix.DTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
 
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter @Setter
 public class VideoUpdateDTO {
     @NotNull

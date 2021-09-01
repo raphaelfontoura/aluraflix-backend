@@ -5,7 +5,6 @@ import com.alura.challenge.raphaelf.aluraflix.entities.Category;
 import com.alura.challenge.raphaelf.aluraflix.entities.Video;
 import com.alura.challenge.raphaelf.aluraflix.repositories.CategoryRepository;
 import com.alura.challenge.raphaelf.aluraflix.services.exceptions.ResourceNotFoundException;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,14 +13,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.querydsl.QPageRequest;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class CategoryServiceTest {
@@ -46,9 +45,11 @@ class CategoryServiceTest {
         Category category = new Category("LIVRE","#FFF");
         List<Video> videos = category.getVideos();
         videos.add(new Video(1L, "Titulo", "Descricao", "http://url.com", category));
-        when(repository.getById(any())).thenReturn(category);
+        when(repository.findById(any())).thenReturn(Optional.of(category));
+
         Page<VideoViewDTO> videosByCategory = service.getVideosByCategory(1L, pageRequest);
 
+        verify(repository, times(1)).findById(1L);
         assertEquals(1, videosByCategory.getTotalElements());
         assertEquals("Titulo", videos.get(0).getTitulo());
     }
@@ -56,7 +57,7 @@ class CategoryServiceTest {
     @Test
     void givenGetVideosByCategory_whenVideosNotExists_thenReturnResourceNotFoundException() {
 
-        when(repository.getById(any())).thenThrow(ResourceNotFoundException.class);
+        when(repository.findById(any())).thenThrow(ResourceNotFoundException.class);
 
         assertThrows(ResourceNotFoundException.class, () -> service.getVideosByCategory(99L, pageRequest));
     }

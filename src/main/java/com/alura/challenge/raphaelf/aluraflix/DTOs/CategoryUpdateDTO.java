@@ -3,6 +3,7 @@ package com.alura.challenge.raphaelf.aluraflix.DTOs;
 import com.alura.challenge.raphaelf.aluraflix.entities.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter @Setter
 public class CategoryUpdateDTO {
     @NotNull

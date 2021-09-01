@@ -6,6 +6,7 @@ import com.alura.challenge.raphaelf.aluraflix.DTOs.CategoryViewDTO;
 import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoViewDTO;
 import com.alura.challenge.raphaelf.aluraflix.services.CategoryService;
 import com.alura.challenge.raphaelf.aluraflix.services.exceptions.ResourceNotFoundException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -112,8 +113,8 @@ class CategoryControllerTest {
 
         mockMvc.perform(post("/categorias")
                         .content(input)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("id").exists());
     }
@@ -153,12 +154,12 @@ class CategoryControllerTest {
                 new VideoViewDTO(1L, "teste", "descricao", "http://url.com", 1L),
                 new VideoViewDTO(1L, "teste", "descricao", "http://url.com", 1L),
                 new VideoViewDTO(1L, "teste", "descricao", "http://url.com", 2L)
-                );
+        );
         when(service.getVideosByCategory(any(), any()))
                 .thenReturn(new PageImpl<>(videos.stream().filter(v -> v.getCategoriaId() == 1L).collect(Collectors.toList())));
 
         mockMvc.perform(get("/categorias/1/videos")
-                .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("content", hasSize(2)));
     }

@@ -70,7 +70,7 @@ public class CategoryService {
         try {
             repository.deleteById(id);
         } catch (EmptyResultDataAccessException err) {
-            throw new ResourceNotFoundException("Categoria não econtrada.");
+            throw new ResourceNotFoundException("Categoria não encontrada.");
         } catch (DataIntegrityViolationException err) {
             throw new DatabaseException("Violação de integridade da base de dados.");
         }
@@ -79,7 +79,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public Page<VideoViewDTO> getVideosByCategory(Long id, PageRequest pageRequest) {
         Category category = repository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException(String.format("Categoria com id %d não econtrada.",id)));
+                () -> new ResourceNotFoundException(String.format("Categoria com id %d não encontrada.",id)));
         List<Video> videos = category.getVideos();
         if (videos.isEmpty()) throw new ResourceNotFoundException("Nao existem videos para categoria informada.");
         List<VideoViewDTO> videosDto = videos.stream().map(VideoViewDTO::new).collect(Collectors.toList());
