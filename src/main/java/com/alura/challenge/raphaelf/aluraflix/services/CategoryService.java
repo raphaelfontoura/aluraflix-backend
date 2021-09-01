@@ -1,9 +1,6 @@
 package com.alura.challenge.raphaelf.aluraflix.services;
 
-import com.alura.challenge.raphaelf.aluraflix.DTOs.CategoryInputDTO;
-import com.alura.challenge.raphaelf.aluraflix.DTOs.CategoryUpdateDTO;
-import com.alura.challenge.raphaelf.aluraflix.DTOs.CategoryViewDTO;
-import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoViewDTO;
+import com.alura.challenge.raphaelf.aluraflix.DTOs.*;
 import com.alura.challenge.raphaelf.aluraflix.entities.Category;
 import com.alura.challenge.raphaelf.aluraflix.entities.Video;
 import com.alura.challenge.raphaelf.aluraflix.repositories.CategoryRepository;
@@ -16,9 +13,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,13 +25,24 @@ public class CategoryService {
     private CategoryRepository repository;
 
 
+    @Transactional(readOnly = true)
     public Page<CategoryViewDTO> findAll(PageRequest pageRequest) {
-        var categories = repository.findAll(pageRequest);
+        Page<Category> categories = repository.findAll(pageRequest);
         if (categories.isEmpty()) throw new ResourceNotFoundException("Não existem registros na base de dados.");
 
         return categories.map(CategoryViewDTO::new);
     }
 
+    @Transactional(readOnly = true)
+    public Page<CategoryWithVideosViewDTO> findAllWithVideos(PageRequest pageRequest) {
+        Page<Category> categories = repository.findAll(pageRequest);
+
+        if (categories.isEmpty()) throw new ResourceNotFoundException("Não existem registros na base de dados.");
+
+        return categories.map(CategoryWithVideosViewDTO::new);
+    }
+
+    @Transactional(readOnly = true)
     public CategoryViewDTO findById(Long id) {
         var category = repository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException(String.format("Categoria com id %d não econtrada.",id)));
@@ -68,8 +76,10 @@ public class CategoryService {
         }
     }
 
+    @Transactional(readOnly = true)
     public Page<VideoViewDTO> getVideosByCategory(Long id, PageRequest pageRequest) {
-        Category category = repository.getById(id);
+        Category category = repository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException(String.format("Categoria com id %d não econtrada.",id)));
         List<Video> videos = category.getVideos();
         if (videos.isEmpty()) throw new ResourceNotFoundException("Nao existem videos para categoria informada.");
         List<VideoViewDTO> videosDto = videos.stream().map(VideoViewDTO::new).collect(Collectors.toList());

@@ -16,11 +16,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -30,12 +28,14 @@ public class VideoService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Transactional(readOnly = true)
     public Page<VideoViewDTO> findAll(PageRequest pageRequest) {
         var videos = repository.findAll(pageRequest);
         if (videos.isEmpty()) throw new ResourceNotFoundException("Não existem registros na base de dados.");
         return videos.map(VideoViewDTO::new);
     }
 
+    @Transactional(readOnly = true)
     public VideoViewDTO findById(Long id) {
         var video = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Video não encontrado."));
         return new VideoViewDTO(video);

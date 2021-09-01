@@ -16,13 +16,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                    .antMatchers("/videos/free").permitAll()
-                    .anyRequest().authenticated()
+        http.authorizeRequests()
+                .antMatchers("/videos/free").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                    .httpBasic();
+                .logout(logout -> logout.logoutUrl("/logout"))
+                .httpBasic();
         http.csrf().disable();
+        http.cors();
     }
 
     @Bean
@@ -34,7 +35,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         .password("alura123")
                         .roles("ADMIN")
                         .build();
-
         return new InMemoryUserDetailsManager(user);
     }
 }

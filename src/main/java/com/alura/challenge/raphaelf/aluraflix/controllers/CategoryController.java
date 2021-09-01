@@ -1,9 +1,6 @@
 package com.alura.challenge.raphaelf.aluraflix.controllers;
 
-import com.alura.challenge.raphaelf.aluraflix.DTOs.CategoryInputDTO;
-import com.alura.challenge.raphaelf.aluraflix.DTOs.CategoryUpdateDTO;
-import com.alura.challenge.raphaelf.aluraflix.DTOs.CategoryViewDTO;
-import com.alura.challenge.raphaelf.aluraflix.DTOs.VideoViewDTO;
+import com.alura.challenge.raphaelf.aluraflix.DTOs.*;
 import com.alura.challenge.raphaelf.aluraflix.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,6 +24,12 @@ public class CategoryController {
     public ResponseEntity<Page<CategoryViewDTO>> findAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         PageRequest pageRequest = PageRequest.of(page,5);
         return ResponseEntity.ok(service.findAll(pageRequest));
+    }
+
+    @GetMapping(params = "_embed=videos")
+    public ResponseEntity<Page<CategoryWithVideosViewDTO>> findAllWithVideos(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+        PageRequest pageRequest = PageRequest.of(page,5);
+        return ResponseEntity.ok(service.findAllWithVideos(pageRequest));
     }
 
     @GetMapping("/{id}")
