@@ -7,6 +7,7 @@ import com.alura.challenge.raphaelf.aluraflix.repositories.CategoryRepository;
 import com.alura.challenge.raphaelf.aluraflix.services.exceptions.DatabaseException;
 import com.alura.challenge.raphaelf.aluraflix.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,7 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable("categories_videos")
     public Page<CategoryWithVideosViewDTO> findAllWithVideos(PageRequest pageRequest) {
         Page<Category> categories = repository.findAll(pageRequest);
 
