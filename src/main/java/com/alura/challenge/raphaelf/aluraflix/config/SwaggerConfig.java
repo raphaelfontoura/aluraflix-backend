@@ -25,13 +25,14 @@ public class SwaggerConfig implements WebMvcConfigurer {
                 .paths(PathSelectors.any())
 //                .paths(PathSelectors.ant("/videos/**"))
 //                .paths(PathSelectors.ant("/categorias/**"))
-                .build();
+                .build()
+                .pathMapping("/")
+                .apiInfo(apiInfo());
     }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/swagger-ui/")
-                .setViewName("forward:" + "/swagger-ui/index.html");
+        registry.addRedirectViewController("/", "/swagger-ui/index.html");
     }
 
     @Override
