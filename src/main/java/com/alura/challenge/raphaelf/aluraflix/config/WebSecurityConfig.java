@@ -29,6 +29,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/videos/free").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/login/**").permitAll()
+                .antMatchers("/swagger-ui/**").permitAll()
                 .anyRequest().authenticated()
                 .and().cors()
                 .and().headers().frameOptions().sameOrigin()
