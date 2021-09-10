@@ -26,9 +26,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/videos/free").permitAll()
-                .antMatchers("/h2-console/**").permitAll()
-                .antMatchers("/login/**").permitAll()
+                .antMatchers("/videos/free","/","/h2-console/**","/login/**").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()
                 .anyRequest().authenticated()
                 .and().cors()
