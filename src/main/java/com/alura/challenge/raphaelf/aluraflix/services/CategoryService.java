@@ -7,6 +7,7 @@ import com.alura.challenge.raphaelf.aluraflix.repositories.CategoryRepository;
 import com.alura.challenge.raphaelf.aluraflix.services.exceptions.DatabaseException;
 import com.alura.challenge.raphaelf.aluraflix.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -52,12 +53,14 @@ public class CategoryService {
     }
 
     @Transactional
+    @CacheEvict(value = "categories_videos", allEntries = true)
     public CategoryViewDTO save(CategoryInputDTO categoryInput) {
         Category category = new Category(categoryInput.getTitulo(), categoryInput.getCor());
         return new CategoryViewDTO(repository.save(category));
     }
 
     @Transactional
+    @CacheEvict(value = "categories_videos", allEntries = true)
     public CategoryViewDTO update(CategoryUpdateDTO dto) {
         try {
             Category category = mapper(dto);
@@ -68,6 +71,7 @@ public class CategoryService {
     }
 
     @Transactional
+    @CacheEvict(value = "categories_videos", allEntries = true)
     public void delete(Long id) {
         try {
             repository.deleteById(id);

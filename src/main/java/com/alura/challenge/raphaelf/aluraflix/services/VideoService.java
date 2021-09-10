@@ -11,6 +11,7 @@ import com.alura.challenge.raphaelf.aluraflix.services.exceptions.DatabaseExcept
 import com.alura.challenge.raphaelf.aluraflix.services.exceptions.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -42,6 +43,7 @@ public class VideoService {
     }
 
     @Transactional
+    @CacheEvict(value = "categories_videos", allEntries = true)
     public VideoViewDTO save(VideoInputDTO videoDto) {
         try {
             var video = Video.builder()
@@ -59,6 +61,7 @@ public class VideoService {
     }
 
     @Transactional
+    @CacheEvict(value = "categories_videos", allEntries = true)
     public VideoViewDTO update(VideoUpdateDTO dto) {
         try {
             Video video = mapper(dto);
@@ -69,6 +72,7 @@ public class VideoService {
     }
 
     @Transactional
+    @CacheEvict(value = "categories_videos", allEntries = true)
     public void delete(Long id) {
         try {
             repository.deleteById(id);
