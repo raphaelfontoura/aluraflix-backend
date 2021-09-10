@@ -16,7 +16,7 @@ public class AccessLogsService {
     private AccessLogsRepository repository;
 
     public List<AccessLogsDTO> findAll() {
-        List<AccessLogs> accessLogs = repository.findAll();
+        List<AccessLogs> accessLogs = repository.findAllByOrderByDataDesc();
         return accessLogs.stream().map(AccessLogsDTO::new).collect(Collectors.toList());
     }
 
