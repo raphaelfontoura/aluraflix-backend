@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -cp target/classes:target/dependency/* com.alura.challenge.raphaelf.aluraflix.AluraflixApplication
+web: java -Dserver.port=$PORT $JAVA_OPTS -jar build/libs/aluraflix-0.0.1-SNAPSHOT.jar
